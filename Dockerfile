@@ -4,7 +4,7 @@ RUN apk --no-cache --no-progress add git ca-certificates tzdata make \
     && update-ca-certificates \
     && rm -rf /var/cache/apk/*
 
-WORKDIR /go/whoami
+WORKDIR /go/echoserver
 
 # Download go modules
 COPY go.mod .
@@ -20,7 +20,7 @@ FROM scratch
 
 COPY --from=builder /usr/share/zoneinfo /usr/share/zoneinfo
 COPY --from=builder /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/
-COPY --from=builder /go/whoami/whoami .
+COPY --from=builder /go/echoserver/echoserver .
 
-ENTRYPOINT ["/whoami"]
+ENTRYPOINT ["/echoserver"]
 EXPOSE 80

@@ -1,4 +1,4 @@
-module github.com/traefik/whoami
+module github.com/x3platform/echoserver
 
 go 1.23
 

@@ -42,6 +42,7 @@ var (
 	ca      string
 	port    string
 	name    string
+	prefix  string
 	verbose bool
 )
 
@@ -51,10 +52,11 @@ func init() {
 	flag.StringVar(&key, "key", "", "give me a key")
 	flag.StringVar(&ca, "cacert", "", "give me a CA chain, enforces mutual TLS")
 	flag.StringVar(&port, "port", getEnv("WHOAMI_PORT_NUMBER", "80"), "give me a port number")
+	flag.StringVar(&prefix, "prefix", os.Getenv("echoserver_PREFIX"), "give me a prefix")
 	flag.StringVar(&name, "name", os.Getenv("WHOAMI_NAME"), "give me a name")
 }
 
-// Data whoami information.
+// Data echoserver information.
 type Data struct {
 	Hostname   string            `json:"hostname,omitempty"`
 	IP         []string          `json:"ip,omitempty"`
@@ -70,13 +72,19 @@ type Data struct {
 func main() {
 	flag.Parse()
 
+	if prefix == "" {
+		prefix = "/"
+	} else if !strings.HasSuffix(prefix, "/") {
+		prefix += "/"
+	}
+
 	mux := http.NewServeMux()
-	mux.Handle("/data", handle(dataHandler, verbose))
-	mux.Handle("/echo", handle(echoHandler, verbose))
-	mux.Handle("/bench", handle(benchHandler, verbose))
-	mux.Handle("/api", handle(apiHandler, verbose))
-	mux.Handle("/health", handle(healthHandler, verbose))
-	mux.Handle("/", handle(whoamiHandler, verbose))
+	mux.Handle(prefix+"api", handle(apiHandler, verbose))
+	mux.Handle(prefix+"data", handle(dataHandler, verbose))
+	mux.Handle(prefix+"echo", handle(echoHandler, verbose))
+	mux.Handle(prefix+"bench", handle(benchHandler, verbose))
+	mux.Handle(prefix+"health", handle(healthHandler, verbose))
+	mux.Handle(prefix, handle(whoamiHandler, verbose))
 
 	if cert == "" || key == "" {
 		log.Printf("Starting up on port %s", port)
@@ -224,12 +232,16 @@ func whoamiHandler(w http.ResponseWriter, r *http.Request) {
 
 	hostname, _ := os.Hostname()
 	_, _ = fmt.Fprintln(w, "Hostname:", hostname)
+	_, _ = fmt.Fprintln(w)
 
 	for _, ip := range getIPs() {
 		_, _ = fmt.Fprintln(w, "IP:", ip)
 	}
+	_, _ = fmt.Fprintln(w)
 
 	_, _ = fmt.Fprintln(w, "RemoteAddr:", r.RemoteAddr)
+	_, _ = fmt.Fprintln(w)
+
 	if err := r.Write(w); err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return

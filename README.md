@@ -1,7 +1,7 @@
-# whoami
+# echoserver
 
-[![Docker Pulls](https://img.shields.io/docker/pulls/traefik/whoami.svg)](https://hub.docker.com/r/traefik/whoami/)
-[![Build Status](https://github.com/traefik/whoami/workflows/Main/badge.svg?branch=master)](https://github.com/traefik/whoami/actions)
+[![Docker Pulls](https://img.shields.io/docker/pulls/x3platform/echoserver.svg)](https://hub.docker.com/r/x3platform/echoserver/)
+[![Build Status](https://github.com/x3platform/echoserver/workflows/Main/badge.svg?branch=master)](https://github.com/x3platform/echoserver/actions)
 
 Tiny Go webserver that prints OS information and HTTP request to output.
 
@@ -11,7 +11,7 @@ Tiny Go webserver that prints OS information and HTTP request to output.
 
 #### `/[?wait=d]`
 
-Returns the whoami information (request and network information).
+Returns the echoserver information (request and network information).
 
 The optional `wait` query parameter can be provided to tell the server to wait before sending the response.
 The duration is expected in Go's [`time.Duration`](https://golang.org/pkg/time/#ParseDuration) format (e.g. `/?wait=100ms` to wait 100 milliseconds).
@@ -20,7 +20,7 @@ The optional `env` query parameter can be set to `true` to add the environment v
 
 #### `/api`
 
-Returns the whoami information (and some extra information) as JSON.
+Returns the echoserver information (and some extra information) as JSON.
 
 The optional `env` query parameter can be set to `true` to add the environment variables to the response.
 
@@ -52,14 +52,14 @@ Heath check.
 | `cert`    |                      | Give me a certificate.                  |
 | `key`     |                      | Give me a key.                          |
 | `cacert`  |                      | Give me a CA chain, enforces mutual TLS |
-| `port`    | `WHOAMI_PORT_NUMBER` | Give me a port number. (default: `80`)  |
-| `name`    | `WHOAMI_NAME`        | Give me a name.                         |
+| `port`    | `echoserver_PORT_NUMBER` | Give me a port number. (default: `80`)  |
+| `name`    | `echoserver_NAME`        | Give me a name.                         |
 | `verbose` |                      | Enable verbose logging.                 |
 
 ## Examples
 
 ```console
-$ docker run -d -P --name iamfoo traefik/whoami
+$ docker run -d -P --name iamfoo x3platform/echoserver
 
 $ docker inspect --format '{{ .NetworkSettings.Ports }}'  iamfoo
 map[80/tcp:[{0.0.0.0 32769}]]
@@ -97,17 +97,17 @@ $ curl -v http://localhost:80/health
 ```
 
 ```console
-docker run -d -P -v ./certs:/certs --name iamfoo traefik/whoami --cert /certs/example.cert --key /certs/example.key
+docker run -d -P -v ./certs:/certs --name iamfoo x3platform/echoserver --cert /certs/example.cert --key /certs/example.key
 ```
 
 ```yml
 version: '3.9'
 
 services:
-  whoami:
-    image: traefik/whoami
+  echoserver:
+    image: x3platform/echoserver
     command:
-       # It tells whoami to start listening on 2001 instead of 80
+       # It tells echoserver to start listening on 2001 instead of 80
        - --port=2001
        - --name=iamfoo
 ```
