@@ -1,6 +1,10 @@
 .idea
+.vscode
 dist/
 vendor/
 /echoserver
+/echoserver.exe
 
+# local develop
+Dockerfile.local
 NOTE.md
